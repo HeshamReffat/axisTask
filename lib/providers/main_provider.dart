@@ -67,14 +67,16 @@ class AppProvider extends ChangeNotifier {
   }
 
   getPersonsFromDatabase() async {
-    loadingPersonsList = true;
-    var store = StoreRef.main();
-    Map<String, dynamic> data =
-        await store.record('persons').get(db!) as Map<String, dynamic>;
-    personsModel = PersonsModel.fromJson(data);
-    lastPage = personsModel!.totalPages!;
-    loadingPersonsList = false;
-    debugPrint(personsModel!.results![0].name);
+    try {
+      var store = StoreRef.main();
+      Map<String, dynamic> data =
+          await store.record('persons').get(db!) as Map<String, dynamic>;
+      personsModel = PersonsModel.fromJson(data);
+      lastPage = personsModel!.totalPages!;
+      debugPrint(personsModel!.results![0].name);
+    } catch (error) {
+      debugPrint(error.toString());
+    }
   }
 
   Future loadMorePersonsList() async {
@@ -165,7 +167,7 @@ class AppProvider extends ChangeNotifier {
 
   Future openDatabase() async {
     Directory root = await getTemporaryDirectory();
- // use the database factory to open the database
+    // use the database factory to open the database
     db = await dbFactory.openDatabase(root.path + Constants().dbPath);
   }
 
